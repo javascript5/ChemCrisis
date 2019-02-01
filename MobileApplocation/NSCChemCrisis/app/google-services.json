@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "54655753357",
+    "firebase_url": "https://nsc-chemcrisis-6d6a2.firebaseio.com",
+    "project_id": "nsc-chemcrisis-6d6a2",
+    "storage_bucket": "nsc-chemcrisis-6d6a2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54655753357:android:ecdeb61b0bcb1924",
+        "android_client_info": {
+          "package_name": "com.chemcrisis.nsc.nscchemcrisis"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "54655753357-um82hhmemgtmcm5glrim76c2ag18jid7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5QGAhV43cFISiaBLtov2EwV91ep7pc40"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
