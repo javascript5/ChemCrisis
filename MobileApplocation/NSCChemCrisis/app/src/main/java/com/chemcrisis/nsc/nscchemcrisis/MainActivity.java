@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Create a heat map tile provider, passing it the latlngs of the police stations.
         if (mProvider == null) {
-            mProvider = new HeatmapTileProvider.Builder().weightedData(data).build();
+            mProvider = new HeatmapTileProvider.Builder().data(list).build();
 
 
             mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng( 23.424076, 	53.847818);
+        LatLng sydney = new LatLng( 13.72996, 	100.778602);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(6), 500, null);

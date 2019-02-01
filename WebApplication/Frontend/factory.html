@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/popup.js"></script>
+
+</head>
+
+<body page="factory">
+
+    <div id="header">
+        <div class="wrapper">
+            <div class="container">
+                <!-- Content here -->
+                <div class="row">
+                    <div class="col-4">
+                        <a href="index.html">
+                            <div class="logo">
+                                <div class="logoText">
+                                    Chem<span>Crisis</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <div class="menu">
+                            <div page="index">
+                                <a href="index.html">จุดประสบภัย</a>
+                            </div>
+                            <div page="factory">
+                                <a href="factory.html">ข้อมูลโรงงาน</a>
+                            </div>
+                            <div page="chemical">
+                                <a href="chemical.html">ข้อมูลสารเคมี</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="dropdownWrapper">
+                            <div class="dropdownMenu dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    เข้าสู่ระบบโดย <b>Admin</b>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                    <button class="dropdown-item" type="button"><a href="#">Logout</a></button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <div id="homepage">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="subTitle">
+                        <h1>ข้อมูลโรงงาน</h1>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="addButtonPosition">
+                        <button class="addProfile"><img src="images/add-record.svg" alt=""></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="chemItem">
+                    <div class="chemItemHeader">
+                        <div class="row">
+                            <div class="col">ชื่อสถานที่</div>
+                            <div class="col">ที่อยู่</div>
+                            <div class="col">Latitude</div>
+                            <div class="col">Longitude</div>
+                            <div class="col-1"></div>
+                        </div>
+                    </div>
+                    <div class="chemItemBody">
+                        <div class="row closeSubItem" factory_id="1">
+                            <div class="col">KMITL</div>
+                            <div class="col">ถนน ฉลองกรุง แขวง ลาดกระบัง เขต ลาดกระบัง</div>
+                            <div class="col">13.729896</div>
+                            <div class="col">100.779320</div>
+                            <div class="col-1 "><img src="images/open_item.png" /></div>
+                        </div>
+
+                        <div class="chemSubItemBody" factory_id="1">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="subTitle">
+                                        <h1>แจ้งเตือนสารเคมีรั่วไหล</h1>
+                                    </div>
+                                </div>
+                                <div class="col"></div>
+                            </div>
+                            <table class="profileTable">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="inputSignup">
+                                                <div>
+                                                    <span>วันที่ และ เวลา<b>*</b></span>
+                                                </div>
+                                                <div>
+                                                    <input required step="1" type="datetime" placeholder="ex. บุญมี">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="inputSignup">
+                                                <div>
+                                                    <span>อัตราที่สารรั่วไหล (g/s)<b>*</b></span>
+                                                </div>
+                                                <div>
+                                                    <input required step="1" type="text" placeholder="ex. บุญมี">
+                                                </div>
+                                                <div class="reccomendChmical">
+                                                    <ul>
+                                                        <li>
+                                                            กกกกก
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="profileTable">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="inputSignup">
+                                                <div>
+                                                    <span>ความสูงจากปากป่อง (m)<b>*</b></span>
+                                                </div>
+                                                <div>
+                                                    <input required step="1" type="text" placeholder="ex. บุญมี">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="inputSignup">
+                                                <div>
+                                                    <span>สารเคมีที่รั่วออกมา<b>*</b></span>
+                                                </div>
+                                                <div>
+                                                    <input required step="1" type="text" placeholder="ex. บุญมี">
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+                            <div class="buttonSignup">
+                                <div class="activeButton nextStep">แจ้งเตือน</div>
+                            </div>
+                        </div>
+
+                        <div class="row closeSubItem" factory_id="2">
+                            <div class="col">KMITL</div>
+                            <div class="col">ถนน ฉลองกรุง แขวง ลาดกระบัง เขต ลาดกระบัง</div>
+                            <div class="col">13.729896</div>
+                            <div class="col">100.779320</div>
+                            <div class="col-1"><img src="images/open_item.png" /></div>
+                        </div>
+
+
+                        <div class="chemSubItemBody" factory_id="2">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="subTitle">
+                                        <h1>แจ้งเตือนสารเคมีรั่วไหล</h1>
+                                    </div>
+                                </div>
+                                <div class="col"></div>
+                            </div>
+                            <table class="profileTable">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="inputSignup">
+                                                <div>
+                                                    <span>วันที่ และ เวลา<b>*</b></span>
+                                                </div>
+                                                <div>
+                                                    <input required step="1" type="datetime" placeholder="ex. บุญมี">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="inputSignup">
+                                                <div>
+                                                    <span>อัตราที่สารรั่วไหล (g/s)<b>*</b></span>
+                                                </div>
+                                                <div>
+                                                    <input required step="1" type="text" placeholder="ex. บุญมี">
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="profileTable">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="inputSignup">
+                                                <div>
+                                                    <span>ความสูงจากปากป่อง (m)<b>*</b></span>
+                                                </div>
+                                                <div>
+                                                    <input required step="1" type="text" placeholder="ex. บุญมี">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="inputSignup">
+                                                <div>
+                                                    <span>สารเคมีที่รั่วออกมา<b>*</b></span>
+                                                </div>
+                                                <div>
+                                                    <input required step="1" type="text" placeholder="ex. บุญมี">
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+                            <div class="buttonSignup">
+                                <div class="activeButton nextStep">แจ้งเตือน</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="noneResult">
+                        <h1>กรุณาค้นหาข้อมูล</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex; justify-content: center;">
+        <div class="addProfilePopup" style="width:30%">
+            <form action="">
+                <div class="subtitle" style="margin-bottom:15px;">
+                    <h3>ข้อมูลติดต่อ</h3>
+                </div>
+                <div class="row">
+                    <div class="col-10">
+                        <div class="inputSignup">
+                            <div>
+                                <span>ชื่อสถานที่<b>*</b></span>
+                            </div>
+                            <div>
+                                <input required step="1" type="text" placeholder="ex. ลงชื่อผู้เก็บ">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-10">
+                        <div class="inputSignup">
+                            <div>
+                                <span>Latitude<b>*</b></span>
+                            </div>
+                            <div>
+                                <input required step="1" type="text" placeholder="ex. ลงชื่อผู้เก็บ">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-10">
+                        <div class="inputSignup">
+                            <div>
+                                <span>Longitude<b>*</b></span>
+                            </div>
+                            <div>
+                                <input required step="1" type="text" placeholder="ex. ลงชื่อผู้เก็บ">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttonSignup" style="text-align:center;">
+                    <button class="activeButton saveForm closeOverlay" style="margin:auto;">เพิ่มข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="overlay">
+    </div>
+</body>
+
+</html>
