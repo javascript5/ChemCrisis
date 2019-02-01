@@ -48,32 +48,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // Retrieve Data
-        databaseReference = database.getReference("test/hello");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String buffer = dataSnapshot.getValue(String.class);
-                Log.i("TEST", buffer);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
     }
 
     private void addHeatMap() {
-        List<LatLng> list = null;
 
         // Get the data: latitude/longitude positions of police stations.
-        try {
-            list = readItems(R.raw.dataset);
-        } catch (JSONException e) {
-            Log.e("TEST", "Problem reading list of locations.");
-        }
+//        try {
+//            list = readItems(R.raw.dataset);
+//        } catch (JSONException e) {
+//            Log.e("TEST", "Problem reading list of locations.");
+//        }
+
 
         int[] colors = {
                 Color.GREEN,    // green(0-50)
@@ -94,32 +79,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         data.add(new WeightedLatLng(new LatLng(23.424076, 53.847818), 2));
 
         // Create a heat map tile provider, passing it the latlngs of the police stations.
-        if (mProvider == null) {
-            mProvider = new HeatmapTileProvider.Builder().data(list).build();
+        final ArrayList<LatLng> list = new ArrayList<LatLng>();
+        databaseReference = database.getReference("accident/123/");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    double lat = ds.child("0").getValue(Double.class);
+                    double lng = ds.child("1").getValue(Double.class);
+                    list.add(new LatLng(lat, lng));
+                }
+                if (mProvider == null) {
+                    mProvider = new HeatmapTileProvider.Builder().data(list).build();
+                    Log.i("TEST", "A");
 
+                    mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+                    mProvider.setRadius(50);
 
-            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
-            mProvider.setRadius(100);
+                    mOverlay.clearTileCache();
+                }
+            }
 
-            mOverlay.clearTileCache();
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
-
-    private ArrayList<LatLng> readItems(int resource) throws JSONException {
-        ArrayList<LatLng> list = new ArrayList<LatLng>();
-        InputStream inputStream = getResources().openRawResource(resource);
-        String json = new Scanner(inputStream).useDelimiter("\\A").next();
-        JSONArray array = new JSONArray(json);
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject object = array.getJSONObject(i);
-            double lat = object.getDouble("lat");
-            double lng = object.getDouble("lng");
-            list.add(new LatLng(lat, lng));
-        }
-        return list;
-    }
 
 
     @Override
@@ -129,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng sydney = new LatLng( 13.72996, 	100.778602);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(6), 500, null);
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 500, null);
         addHeatMap();
     }
 }
