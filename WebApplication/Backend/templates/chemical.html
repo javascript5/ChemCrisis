@@ -1,0 +1,130 @@
+{% include 'header.html' %}
+<div id="homepage" page={{page}}>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="subTitle">
+                    <h1>ข้อมูลสารเคมี</h1>
+                </div>
+            </div>
+            <div class="col">
+                <div class="addButtonPosition">
+                    <button class="addProfile"><img src="../static/images/add-record.svg" alt=""></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="chemItem">
+                <div class="chemItemHeader">
+                    <div class="row">
+                        <div class="col">ชื่อทางวิทยาศาสต์ (ชื่อภาษาไทย)</div>
+                        <div class="col">น้ำหนักโมเลกุล</div>
+                        <div class="col">ระดับความอันตราย</div>
+                        <div class="col">ผลกระทบต่อร่างกาย</div>
+                        <div class="col-1">ลบ</div>
+                    </div>
+                </div>
+                <div class="chemItemBody">
+                    {% for chemical in chemicals %}
+                    <div class="row closeSubItem item" chemical_id="1">
+                        <div class="col">{{chemicals[chemical]['chemicalName']}} ({{chemicals[chemical]['chemicalThaiName']}})</div>
+                        <div class="col">{{chemicals[chemical]['molecularWeight']}}</div>
+                        <div class="col">{{chemicals[chemical]['violenceOfChemical']}}</div>
+                        <div class="col">{{chemicals[chemical]['effectsOfChemical']}}</div>
+                        <form action="/deleteChemical" method="POST">
+                            <input name="chemicalId" value={{chemical}} style="display: none;" />
+                        <div class="col-1 "><button><img src="../static/images/close_item.png" /></button></div>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="noneResult">
+                    <h1>กรุณาค้นหาข้อมูล</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="display:flex; justify-content: center;">
+    <div class="addProfilePopup">
+        <form action="/addChemical" method="POST">
+            <div class="subtitle" style="margin-bottom:15px;">
+                <h3>ข้อมูลสารเคมี</h3>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="inputSignup">
+                        <div>
+                            <span>ชื่อทางวิทยาศาสตร์<b>*</b></span>
+                        </div>
+                        <div>
+                            <input name="chemicalName" type="text" placeholder="ex. SODIUM CHLORIDE">
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="inputSignup">
+                        <div>
+                            <span>ชื่อภาษาไทย<b>*</b></span>
+                        </div>
+                        <div>
+                            <input name="chemicalThaiName" type="text" placeholder="ex. โซเดียมคลอไรด์">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="inputSignup">
+                        <div>
+                            <span>น้ำหนักโมเลกุล<b>*</b></span>
+                        </div>
+                        <div>
+                            <input name="molecularWeight" type="text" placeholder="ex. 0.0">
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="inputSignup">
+                        <div>
+                            <span>ระดับความอันตราย<b>*</b></span>
+                        </div>
+                        <div>
+                            <select name="violenceOfChemical">
+                                <option value="ต่ำ">ต่ำ</option>
+                                <option value="ปานกลาง">ปานกลาง</option>
+                                <option value="สูง">สูง</option>
+                                
+                                
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="inputSignup">
+                        <div>
+                            <span>ผลกระทบต่อร่างกาย<b>*</b></span>
+                        </div>
+                        <div>
+                            <input name="effectsOfChemical" type="text" placeholder="eg. วิงเวียนศรีษะ, อาเจียน">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="buttonSignup" style="text-align:center;">
+                <button class="activeButton saveForm closeOverlay" style="margin:auto;">เพิ่มข้อมูล</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="overlay">
+</div>
+</body>
+
+</html>
