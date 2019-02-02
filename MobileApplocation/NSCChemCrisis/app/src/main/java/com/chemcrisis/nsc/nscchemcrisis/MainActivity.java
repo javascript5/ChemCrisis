@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     Log.i("TEST", "A");
 
                     mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
-                    mProvider.setRadius(50);
+                    mProvider.setRadius(100);
 
                     mOverlay.clearTileCache();
                 }
