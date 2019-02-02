@@ -80,14 +80,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Create a heat map tile provider, passing it the latlngs of the police stations.
         final ArrayList<LatLng> list = new ArrayList<LatLng>();
-        databaseReference = database.getReference("accident/123/");
+        databaseReference = database.getReference("accident/KMITL/accidentPosition/");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     double lat = ds.child("0").getValue(Double.class);
                     double lng = ds.child("1").getValue(Double.class);
-                    list.add(new LatLng(lat, lng));
+                    double mass = ds.child("2").getValue(Double.class);
+                    if (mass > 10){
+                        list.add(new LatLng(lat, lng));
+                    }
                 }
                 if (mProvider == null) {
                     mProvider = new HeatmapTileProvider.Builder().data(list).build();
