@@ -32,7 +32,7 @@
                         <div class="col">{{chemicals[chemical]['molecularWeight']}}</div>
                         <div class="col">{{chemicals[chemical]['violenceOfChemical']}}</div>
                         <div class="col">{{chemicals[chemical]['effectsOfChemical']}}</div>
-                        <form action="/deleteChemical" method="POST">
+                        <form action="/deleteChemical" method="POST" class="removeForm">
                             <input name="chemicalId" value={{chemical}} style="display: none;" />
                         <div class="col-1 "><button><img src="../static/images/close_item.png" /></button></div>
                         </form>
