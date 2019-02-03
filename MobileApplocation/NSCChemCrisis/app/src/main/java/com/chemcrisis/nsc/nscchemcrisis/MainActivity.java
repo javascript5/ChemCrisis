@@ -39,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TileOverlay mOverlay;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference databaseReference;
+    private Gradient gradient;
+    private ArrayList<WeightedLatLng> data;
+    private ArrayList<LatLng> list;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,16 +73,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         };
 
         float[] startpoints = {
-                0.1F, 0.2F, 0.3F, 0.4F, 0.6F, 1.0F
+                0.1F, 0.2F, 0.3F, 0.4F, 0.5F, 1.0F
         };
 
-        Gradient gradient = new Gradient(colors, startpoints);
-        ArrayList<WeightedLatLng> data = new ArrayList<WeightedLatLng>();
+        gradient = new Gradient(colors,startpoints);
+       data = new ArrayList<WeightedLatLng>();
 
-        data.add(new WeightedLatLng(new LatLng(23.424076, 53.847818), 2));
+
 
         // Create a heat map tile provider, passing it the latlngs of the police stations.
-        final ArrayList<LatLng> list = new ArrayList<LatLng>();
+        list = new ArrayList<LatLng>();
         databaseReference = database.getReference("accident/KMITL/accidentPosition/");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -89,11 +92,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     double lng = ds.child("1").getValue(Double.class);
                     double mass = ds.child("2").getValue(Double.class);
                     if (mass > 10){
-                        list.add(new LatLng(lat, lng));
+                        data.add(new WeightedLatLng(new LatLng(lat, lng), mass));
                     }
                 }
                 if (mProvider == null) {
-                    mProvider = new HeatmapTileProvider.Builder().data(list).build();
+                    mProvider = new HeatmapTileProvider.Builder().weightedData(data).gradient(gradient).build();
                     Log.i("TEST", "A");
 
                     mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
