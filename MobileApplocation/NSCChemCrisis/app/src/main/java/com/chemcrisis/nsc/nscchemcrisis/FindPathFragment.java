@@ -59,7 +59,15 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-       return inflater.inflate(R.layout.find_path_fragment, container, false);
+//       return inflater.inflate(R.layout.find_path_fragment, container, false);
+
+        View view = inflater.inflate(R.layout.find_path_fragment, null, false);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        return view;
 
 
     }

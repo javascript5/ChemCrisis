@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
 
                         String msg = token;
                         Log.d("GETTOKEN", msg);
-                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
