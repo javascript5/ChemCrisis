@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         getFCMToken();
-        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()

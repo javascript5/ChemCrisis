@@ -47,7 +47,12 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
 
 //        SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager()
 //                .findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(this);
+//        mapFragment.getMapAsync(new OnMapReadyCallback() {
+//            @Override
+//            public void onMapReady(GoogleMap googleMap) {
+//                mMap = googleMap;
+//            }
+//        });
 
     }
 
