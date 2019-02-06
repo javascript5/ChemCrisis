@@ -4,6 +4,7 @@ from time import gmtime, strftime
 from gaussian.main import gaussian
 from urllib.request import urlopen
 from firebase import firebase
+from pyfcm import FCMNotification
 firebase = firebase.FirebaseApplication('https://nsc-chemcrisis-6d6a2.firebaseio.com/', None)
 
 app = Flask(__name__)
@@ -78,14 +79,14 @@ def addAccident():
         effectiveStackHeight = req["effectiveStackHeight"]
         effectiveStackHeight = float(effectiveStackHeight)
         accidentChemical = req["accidentChemical"][:-2]
-        accidentChemical= accidentChemical.replace(" ","")
+        if ' ' is accidentChemical:
+            accidentChemical= accidentChemical.replace(" ","")
         wind_data = load_weather(latitude, longitude)
         windDeg = wind_data['deg']
         windSpeed = wind_data['speed']
         dataSet =  gaussian(windDeg, 1000, latitude, longitude, massEmissionRate, windSpeed, effectiveStackHeight)
         data = {'dateTime':dateTime,'massEmissionRate':massEmissionRate,'effectiveStackHeight':effectiveStackHeight,'accidentPosition':dataSet,'accidentChemical':accidentChemical}
-        if firebase.get("/accident/", factory) is None:
-            firebase.put('/accident/',factory, data)
+        firebase.put('/accident/',factory, data)
             
     return redirect('/index')
 
