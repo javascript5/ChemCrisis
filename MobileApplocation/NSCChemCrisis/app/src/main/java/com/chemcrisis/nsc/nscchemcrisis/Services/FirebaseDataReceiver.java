@@ -15,16 +15,14 @@ public class FirebaseDataReceiver extends WakefulBroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if (intent.getExtras() != null) {
+        if (intent.getExtras().get("content") != null) {
 //            for (String key : intent.getExtras().keySet()) {
 //                Object value = intent.getExtras().get(key);
 //                Log.e("FirebaseDataReceiver", "Key: " + key + " Value: " + value);
 //            }
 
             content = intent.getExtras().get("content").toString();
-            Bundle dataBundle = intent.getBundleExtra(content);
-
-            Log.i("CONTENT", content);
+            Log.i("CONTENT", content + "");
         }
     }
 

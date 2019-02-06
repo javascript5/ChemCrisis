@@ -58,6 +58,7 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
         return view;
     }
 

@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             }else{
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.main_view, new FindPathFragment())
+                        .replace(R.id.main_view, new SafezoneFragment())
                         .addToBackStack(null)
                         .commit();
             }
