@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chemcrisis.nsc.nscchemcrisis.LoadingDialog.CustomLoadingDialog;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -40,6 +41,7 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
     private ArrayList<WeightedLatLng> data;
     private ArrayList<LatLng> list;
     private SupportMapFragment mapFragment;
+    private CustomLoadingDialog customLoadingDialog;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -63,6 +65,8 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void addHeatMap() {
+        customLoadingDialog = new CustomLoadingDialog(getActivity());
+        customLoadingDialog.showDialog();
 
         int[] colors = {
                 Color.GREEN,    // green(0-50)
@@ -83,7 +87,6 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
 
 
         // Create a heat map tile provider, passing it the latlngs of the police stations.
-        list = new ArrayList<LatLng>();
         databaseReference = database.getReference("accident/KMITL/accidentPosition/");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -92,24 +95,24 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
                     double lat = ds.child("0").getValue(Double.class);
                     double lng = ds.child("1").getValue(Double.class);
                     double mass = ds.child("2").getValue(Double.class);
-                    if (mass > 10){
+                    if (mass > 0){
                         data.add(new WeightedLatLng(new LatLng(lat, lng), mass));
                     }
                 }
                 if (mProvider == null) {
                     mProvider = new HeatmapTileProvider.Builder().weightedData(data).gradient(gradient).build();
-                    Log.i("TEST", "A");
 
                     mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
                     mProvider.setRadius(100);
 
                     mOverlay.clearTileCache();
+                    customLoadingDialog.dismissDialog();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    customLoadingDialog.dismissDialog();
             }
         });
 
@@ -119,10 +122,10 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng( 13.72996, 	100.778602);
+        LatLng sydney = new LatLng( 13.729972, 	100.778495);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 500, null);
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 100, null);
         addHeatMap();
     }
 }

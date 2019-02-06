@@ -61,14 +61,16 @@ public class MainActivity extends AppCompatActivity {
                             .addToBackStack(null)
                             .commit();
                 }
+                FirebaseDataReceiver.setContent();
             }else{
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.main_view, new SafezoneFragment())
+                        .replace(R.id.main_view, new FindPathFragment())
                         .addToBackStack(null)
                         .commit();
             }
         }
+
     }
 
     @Override

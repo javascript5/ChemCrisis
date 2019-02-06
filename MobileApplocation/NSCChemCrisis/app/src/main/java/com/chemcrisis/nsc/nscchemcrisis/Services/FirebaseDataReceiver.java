@@ -29,4 +29,8 @@ public class FirebaseDataReceiver extends WakefulBroadcastReceiver {
     public static String getContent(){
         return content;
     }
+
+    public static void setContent(){
+        content = null;
+    }
 }
