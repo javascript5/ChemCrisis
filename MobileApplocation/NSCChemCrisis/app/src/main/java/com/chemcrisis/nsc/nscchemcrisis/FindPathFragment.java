@@ -45,15 +45,6 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-//        SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager()
-//                .findFragmentById(R.id.map);
-//        mapFragment.getMapAsync(new OnMapReadyCallback() {
-//            @Override
-//            public void onMapReady(GoogleMap googleMap) {
-//                mMap = googleMap;
-//            }
-//        });
-
     }
 
     @Nullable
@@ -68,8 +59,6 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         return view;
-
-
     }
 
     private void addHeatMap() {

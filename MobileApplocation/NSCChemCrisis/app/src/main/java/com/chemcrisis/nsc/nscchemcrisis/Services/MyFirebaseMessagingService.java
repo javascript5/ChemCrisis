@@ -50,22 +50,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData().get("content"));
+
 
         }
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            String title = remoteMessage.getNotification().getTitle(); //get title
+            String message = remoteMessage.getNotification().getBody(); //get message
+
+            Log.d(TAG, "Message Notification Title: " + title);
+            Log.d(TAG, "Message Notification Body: " + message);
+//            Log.d(TAG, "Message Notification click_action: " + click_action);
+//
+//            sendNotification(title, message,click_action);
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
     }
-    // [END receive_message]
-
-
-    // [START on_new_token]
 
     /**
      * Called if InstanceID token is updated. This may occur if the security of
@@ -82,34 +86,47 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
 
-    private void sendNotification(String messageBody) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
-
-        String channelId = getString(R.string.default_notification_channel_id);
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.alarm_icon)
-                        .setContentTitle("fcm_message")
-                        .setContentText(messageBody)
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
-
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-    }
+//    private void sendNotification(String title,String messageBody, String click_action) {
+//        Intent intent;
+//
+//        if(click_action.equals("SOMEACTIVITY")){
+//            intent = new Intent(this, MainActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        }
+//        else if(click_action.equals("MAINACTIVITY")){
+//            intent = new Intent(this, MainActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        }else{
+//            intent = new Intent(this, MainActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        }
+//
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+//                PendingIntent.FLAG_ONE_SHOT);
+//
+//        String channelId = getString(R.string.default_notification_channel_id);
+//        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        NotificationCompat.Builder notificationBuilder =
+//                new NotificationCompat.Builder(this, channelId)
+//                        .setSmallIcon(R.drawable.alarm_icon)
+//                        .setContentTitle("fcm_message")
+//                        .setContentText(messageBody)
+//                        .setAutoCancel(true)
+//                        .setSound(defaultSoundUri)
+//                        .setContentIntent(pendingIntent);
+//
+//        NotificationManager notificationManager =
+//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        // Since android Oreo notification channel is needed.
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            NotificationChannel channel = new NotificationChannel(channelId,
+//                    "fcm_default_channel",
+//                    NotificationManager.IMPORTANCE_DEFAULT);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//
+//        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+//    }
 }

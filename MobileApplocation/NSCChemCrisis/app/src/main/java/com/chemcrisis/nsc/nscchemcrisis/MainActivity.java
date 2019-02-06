@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.chemcrisis.nsc.nscchemcrisis.Services.FirebaseDataReceiver;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -39,14 +40,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FirebaseMessaging.getInstance().subscribeToTopic("NEWS");
+
         getFCMToken();
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_view, new FindPathFragment())
-                    .addToBackStack(null)
-                    .commit();
+            if (FirebaseDataReceiver.getContent() != null){
+                String content = FirebaseDataReceiver.getContent();
+                Log.i("CONTENTINMAIN", content);
+                if(content.equals("CHEM")){
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.main_view, new FindPathFragment())
+                            .addToBackStack(null)
+                            .commit();
+                }else{
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.main_view, new SafezoneFragment())
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }else{
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_view, new FindPathFragment())
+                        .addToBackStack(null)
+                        .commit();
+            }
         }
     }
 
