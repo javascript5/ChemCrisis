@@ -17,6 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+    }
 }
 
 dependencies {
@@ -40,4 +43,13 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    implementation 'com.mcxiaoke.volley:library:1.0.19'
+
+    implementation 'org.apache.httpcomponents:httpcore:4.4.11'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.7'
+
+
+
 }
+
