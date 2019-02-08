@@ -1,0 +1,99 @@
+{% include 'header.html' %}
+<div id="homepage" page='{{ page }}'>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="subTitle">
+                    <h1>จุดประสบภัย</h1>
+                </div>
+            </div>
+            <div class="col"></div>
+        </div>
+
+        <div class="row">
+            <div class="chemItem">
+                <div class="row chemItemHeader">
+                        <div class="col">ชื่อสถานที่</div>
+                        <div class="col">ที่อยู่</div>
+                        <div class="col">Latitude</div>
+                        <div class="col">Longitude</div>
+                        <div class="col-1"></div>
+                </div>
+                <div class="chemItemBody">
+                    {% for accident in accidents%}
+                    <div class="row closeSubItem item" accident_id={{accident}}>
+                        <div class="col">{{accident}}</div>
+                        <div class="col">{{factorys[accident]['address']}}</div>
+                        <div class="col">{{factorys[accident]['latitude']}}</div>
+                        <div class="col">{{factorys[accident]['longitude']}}</div>
+                        <div class="col-1 "><img src="../static/images/open_item.png" /></div>
+                    </div>
+                    
+
+                    <div class="chemSubItemBody" accident_id={{accident}}>
+                        <div class="row">
+                            <div class="col">
+                                <div class="subTitle">
+                                    <h1>ข้อมูล ณ จุดประสบภัย</h1>
+                                </div>
+                            </div>
+                            <div class="col"></div>
+                        </div>
+                        <table class="profileTable">
+                            <thead>
+                                <tr>
+                                    <th>วันที่ และ เวลา</th>
+                                    <th>อัตรามลพิษ (g/s)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{accidents[accident]['dateTime']}}</td>
+                                    <td>
+                                            {{accidents[accident]['massEmissionRate']}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="profileTable">
+                            <thead>
+                                <tr>
+                                    <th>ความสูงจากปากป่อง (m.)</th>
+                                    <th>สารเคมีที่พบ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                            {{accidents[accident]['effectiveStackHeight']}}
+                                    </td>
+                                    <td>
+                                            {{accidents[accident]['accidentChemical']}}
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+                        <div class="buttonSignup">
+                            <form action="/removeAccident" method="POST">
+                            <input name="accidentId" value={{accident}} style="display: none;" />
+                            <button class="activeButton nextStep">หยุดการแจ้งเตือน</button>
+                        </form>
+                        </div>
+                        <div class="textRemind"><span>**กดเมื่อสถานที่นี้ปลอดภัยจาสารเคมีแล้ว**</span></div>
+                    </div>
+                    {% endfor %}
+                    
+                </div>
+
+                <div class="noneResult">
+                    <h1>กรุณาค้นหาข้อมูล</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>
