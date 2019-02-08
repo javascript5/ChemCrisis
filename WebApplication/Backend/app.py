@@ -5,6 +5,7 @@ from gaussian.main import gaussian
 from urllib.request import urlopen
 from firebase import firebase
 from pyfcm import FCMNotification
+import datetime  , time
 firebase = firebase.FirebaseApplication('https://nsc-chemcrisis-6d6a2.firebaseio.com/', None)
 
 app = Flask(__name__)
@@ -29,7 +30,9 @@ def factory():
         factorys = firebase.get('/factory' ,None)
     if firebase.get('/chemical' ,None) is not None:
         chemicals = firebase.get('/chemical' ,None)
-    return render_template('factory.html', page='factory' ,factorys=factorys, currentDateTime=strftime("%Y-%m-%d %H:%M:%S", gmtime()), chemicals=chemicals)
+    date = time.localtime()
+    a = time.strftime('%d/%m/%Y/ - %H:%M:%S', date)
+    return render_template('factory.html', page='factory' ,factorys=factorys, currentDateTime=a, chemicals=chemicals)
     
 @app.route("/deleteFactory", methods=['GET', 'POST'])
 def deleteFactory():
@@ -59,7 +62,7 @@ def addFactoryLocation():
     if request.method == 'POST':
         req = request.form
         locationName = req["locationName"]
-        data = {'address':req["address"],'latitude': req["latitude"],'longitude': req["longitude"]}
+        data = {'address':req["address"],'latitude': float(req["latitude"]),'longitude': float(req["longitude"])}
         if firebase.get("/factory/", locationName) is None:
             firebase.put('/factory/',locationName, data)
     return redirect('/factory')
@@ -79,25 +82,25 @@ def addAccident():
         effectiveStackHeight = req["effectiveStackHeight"]
         effectiveStackHeight = float(effectiveStackHeight)
         accidentChemical = req["accidentChemical"][:-2]
-        if ' ' in accidentChemical:
-            accidentChemical= accidentChemical.replace(" ","")
         wind_data = load_weather(latitude, longitude)
         windDeg = wind_data['deg']
         windSpeed = wind_data['speed']
         dataSet =  gaussian(windDeg, 1000, latitude, longitude, massEmissionRate, windSpeed, effectiveStackHeight)
         data = {'dateTime':dateTime,'massEmissionRate':massEmissionRate,'effectiveStackHeight':effectiveStackHeight,'accidentPosition':dataSet,'accidentChemical':accidentChemical}
+        history = {'factoryId':factory,'dateTime':dateTime,'massEmissionRate':massEmissionRate,'effectiveStackHeight':effectiveStackHeight,'accidentChemical':accidentChemical}
         firebase.put('/accident/',factory, data)
+        firebase.post('/history/',history)
         sendNotification(factory)
         
     return redirect('/index')
 
-def sendNotification(factory, ):
+def sendNotification(factory ):
     push_service = FCMNotification(api_key="AIzaSyDXMxfSwPddFDdyeaf0OVyvZEog5ThuFRI")
     data = {
     "content" : "CHEM"
     }
     title = "ท่าอยู่ในจุดเกิดเหตุการรั่วไหลของสารเคมี"
-    message = "กรุณาออกจากจุดเกิดเหตุโดยด่วน ให้พวกเรานำทางให้สิ (จุดเกิดเหตุ โรงงาน "+factory+" )")
+    message = ("กรุณาออกจากจุดเกิดเหตุโดยด่วน ให้พวกเรานำทางให้สิ (จุดเกิดเหตุ โรงงาน %s)" , factory)
     result = push_service.notify_topic_subscribers(topic_name="NEWS",message_title=title, message_body=message,data_message=data)
     print(result)
 

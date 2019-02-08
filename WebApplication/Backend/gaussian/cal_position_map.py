@@ -30,7 +30,7 @@ def getGaussian(plotList, Q, u, h, windType, windDirection):
                 sigma_z = cal_sigma(windType, downwind)[0]
                 sigma_y = cal_sigma(windType, downwind)[1]
                 if downwind > 0:
-                        buffer = int(cal_gaussian_func(downwind, crosswind, Q, u, sigma_z, sigma_y, h)*(10**6))
+                        buffer = int(cal_gaussian_func(downwind, crosswind, Q, u, sigma_z, sigma_y, h)*(10**5))
                 else:
                         buffer = 0
                 gassian.append(buffer)
@@ -38,8 +38,8 @@ def getGaussian(plotList, Q, u, h, windType, windDirection):
 
 def getPoint(distance):
         plotList = []
-        for i in range (distance * -1, distance + 1, 100):
-                for j in range (distance * -1, distance + 1, 100):
+        for i in range (distance * -1, distance + 1, 50):
+                for j in range (distance * -1, distance + 1, 50):
                         if not (i == 0 and j == 0):
                                 plotList.append((j, i))
         return plotList
