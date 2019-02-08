@@ -41,6 +41,7 @@ public class AccidentInformationFragment extends Fragment {
 
                      @Override
                      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                         chemicals.clear();
                          chemicals.add(dataSnapshot.getValue(Chemical.class));
                          RecyclerView chemicalList = getView().findViewById(R.id.chemical_information_list_view);
 

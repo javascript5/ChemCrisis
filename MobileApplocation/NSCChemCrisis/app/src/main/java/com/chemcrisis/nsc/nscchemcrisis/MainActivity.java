@@ -43,33 +43,38 @@ public class MainActivity extends AppCompatActivity {
         FirebaseMessaging.getInstance().subscribeToTopic("NEWS");
 
         getFCMToken();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_view, new AccidentHistoryFragment())
+                .addToBackStack(null)
+                .commit();
 
-        if (savedInstanceState == null) {
-            if (FirebaseDataReceiver.getContent() != null){
-                String content = FirebaseDataReceiver.getContent();
-                Log.i("CONTENTINMAIN", content);
-                if(content.equals("CHEM")){
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.main_view, new FindPathFragment())
-                            .addToBackStack(null)
-                            .commit();
-                }else{
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.main_view, new SafezoneFragment())
-                            .addToBackStack(null)
-                            .commit();
-                }
-                FirebaseDataReceiver.setContent();
-            }else{
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.main_view, new FindPathFragment())
-                        .addToBackStack(null)
-                        .commit();
-            }
-        }
+//        if (savedInstanceState == null) {
+//            if (FirebaseDataReceiver.getContent() != null){
+//                String content = FirebaseDataReceiver.getContent();
+//                Log.i("CONTENTINMAIN", content);
+//                if(content.equals("CHEM")){
+//                    getSupportFragmentManager()
+//                            .beginTransaction()
+//                            .replace(R.id.main_view, new FindPathFragment())
+//                            .addToBackStack(null)
+//                            .commit();
+//                }else{
+//                    getSupportFragmentManager()
+//                            .beginTransaction()
+//                            .replace(R.id.main_view, new SafezoneFragment())
+//                            .addToBackStack(null)
+//                            .commit();
+//                }
+//                FirebaseDataReceiver.setContent();
+//            }else{
+//                getSupportFragmentManager()
+//                        .beginTransaction()
+//                        .replace(R.id.main_view, new FindPathFragment())
+//                        .addToBackStack(null)
+//                        .commit();
+//            }
+//        }
 
     }
 
