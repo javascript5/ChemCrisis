@@ -59,11 +59,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         getFCMToken();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.main_view, new AccidentHistoryFragment())
-                .addToBackStack(null)
-                .commit();
 
 //        if (savedInstanceState == null) {
 //            if (FirebaseDataReceiver.getContent() != null){
