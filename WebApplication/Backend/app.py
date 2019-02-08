@@ -5,7 +5,6 @@ from gaussian.main import gaussian
 from urllib.request import urlopen
 from firebase import firebase
 from pyfcm import FCMNotification
-from pyfcm import FCMNotification
 firebase = firebase.FirebaseApplication('https://nsc-chemcrisis-6d6a2.firebaseio.com/', None)
 
 app = Flask(__name__)
@@ -88,17 +87,17 @@ def addAccident():
         dataSet =  gaussian(windDeg, 1000, latitude, longitude, massEmissionRate, windSpeed, effectiveStackHeight)
         data = {'dateTime':dateTime,'massEmissionRate':massEmissionRate,'effectiveStackHeight':effectiveStackHeight,'accidentPosition':dataSet,'accidentChemical':accidentChemical}
         firebase.put('/accident/',factory, data)
-        sendNotification()
+        sendNotification(factory)
         
     return redirect('/index')
 
-def sendNotification():
+def sendNotification(factory, ):
     push_service = FCMNotification(api_key="AIzaSyDXMxfSwPddFDdyeaf0OVyvZEog5ThuFRI")
     data = {
     "content" : "CHEM"
     }
-    title = "Uber update"
-    message = "Hi john, your customized news for today is ready"
+    title = "ท่าอยู่ในจุดเกิดเหตุการรั่วไหลของสารเคมี"
+    message = "กรุณาออกจากจุดเกิดเหตุโดยด่วน ให้พวกเรานำทางให้สิ (จุดเกิดเหตุ โรงงาน "+factory+" )")
     result = push_service.notify_topic_subscribers(topic_name="NEWS",message_title=title, message_body=message,data_message=data)
     print(result)
 
