@@ -1,8 +1,8 @@
 package com.chemcrisis.nsc.nscchemcrisis;
 
+import android.Manifest;
 import android.graphics.Color;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chemcrisis.nsc.nscchemcrisis.LoadingDialog.CustomLoadingDialog;
-import com.chemcrisis.nsc.nscchemcrisis.Services.GMapV2Direction;
+//import com.chemcrisis.nsc.nscchemcrisis.Services.GPSTracker;
+import com.chemcrisis.nsc.nscchemcrisis.Route.FetchURL;
+import com.chemcrisis.nsc.nscchemcrisis.Route.TaskLoadedCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -35,14 +37,12 @@ import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -52,7 +52,7 @@ import okhttp3.Response;
 
 public class FindPathFragment extends Fragment implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    public static GoogleMap mMap;
     private HeatmapTileProvider mProvider;
     private TileOverlay mOverlay;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -62,6 +62,18 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
     private ArrayList<LatLng> list;
     private SupportMapFragment mapFragment;
     private CustomLoadingDialog customLoadingDialog;
+
+    private static final String[] LOCATION_PERMS={
+            Manifest.permission.ACCESS_FINE_LOCATION
+    };
+
+    private static final int INITIAL_REQUEST=1337;
+
+    private static final int LOCATION_REQUEST=INITIAL_REQUEST+3;
+
+    private double currentLat, currentLn;
+
+    public static Polyline currentPolyline;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -77,10 +89,19 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
 
         View view = inflater.inflate(R.layout.find_path_fragment, null, false);
 
+//        currentLat = Double.valueOf(getArguments().getString("currentLa"));
+//        currentLn = Double.valueOf(getArguments().getString("currentLong"));
+
+
+        currentLat = 13.731222;
+        currentLn = 100.779297;
+
+
+        Log.i("FIND", currentLat + ";" + currentLn);
+
         SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
 
 
         return view;
@@ -120,39 +141,40 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
                     double lng = ds.child("1").getValue(Double.class);
                     double mass = ds.child("2").getValue(Double.class);
 
-                    if (mass > 10){
+                    if (mass > 100){
                         data.add(new WeightedLatLng(new LatLng(lat, lng), mass));
                     }
 
                     else if (mass <= 0){
-                        float result = getDistanceBetweenTwoPoints(13.733129, 100.779534, lat, lng);
+                        float result = getDistanceBetweenTwoPoints(currentLat, currentLn, lat, lng);
                         if (result < distance){
                             distance = result;
-                            nearestLa = lat;
+                            nearestLa = lat + 0.000900000900001;
                             nearestLng = lng;
                         }
                     }
                 }
 
-                plotRouteLine(new LatLng(13.733129, 100.779534), new LatLng(nearestLa, nearestLng), mMap);
                 Log.i("REST", "DistanceInMeter" + distance);
                 getDistanceApi(nearestLa, nearestLng);
 
-                final LatLng ORIGIN = new LatLng(13.733129, 100.779534);
+                final LatLng ORIGIN = new LatLng(currentLat, currentLn);
                 Marker origin  = mMap.addMarker(new MarkerOptions()
                         .position(ORIGIN)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
                 final LatLng MELBOURNE = new LatLng(nearestLa, nearestLng);
                 Marker melbourne = mMap.addMarker(new MarkerOptions()
                         .position(MELBOURNE)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+                new FetchURL(getContext()).execute(getUrl(new LatLng(currentLat, currentLn), new LatLng(nearestLa, nearestLng), "driving"), "driving");
 
                 if (mProvider == null) {
                     mProvider = new HeatmapTileProvider.Builder().weightedData(data).gradient(gradient).build();
 
                     mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
-                    mProvider.setRadius(150);
+                    mProvider.setRadius(100);
 
                     mOverlay.clearTileCache();
                     customLoadingDialog.dismissDialog();
@@ -171,17 +193,19 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng( 13.729972, 	100.778495);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        LatLng sydney = new LatLng( currentLat, 	currentLn);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Your Location"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(14), 500, null);
+        mMap.setMaxZoomPreference(17);
+        mMap.setMinZoomPreference(17);
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(17), 500, null);
         addHeatMap(mMap);
     }
 
 
     private void getDistanceApi(double la, double ln) {
-        double originLa = 13.733129;
-        double originLn = 100.779534;
+        double originLa = currentLat;
+        double originLn = currentLn;
         String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=" + originLa + "," + originLn + "&&destinations=" + la + "," + ln + "&key=AIzaSyAYPbRd9v0N1KJcoa8I6mrVwWeXTUBlha4";
         try {
             run(url);
@@ -238,23 +262,6 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void plotRouteLine(LatLng origin, LatLng destination,GoogleMap mMap){
-        GMapV2Direction md = new GMapV2Direction();
-
-        Document doc = md.getDocument(origin, destination,
-                GMapV2Direction.MODE_DRIVING);
-        Log.i("Test", "MD : " + doc);
-        ArrayList<LatLng> directionPoint = md.getDirection(doc);
-        PolylineOptions rectLine = new PolylineOptions().width(3).color(
-                Color.RED);
-
-        for (int i = 0; i < directionPoint.size(); i++) {
-            rectLine.add(directionPoint.get(i));
-        }
-        Polyline polylin = mMap.addPolyline(rectLine);
-
-    }
-
     private float getDistanceBetweenTwoPoints(double la1, double ln1, double la2, double ln2){
         Location loc1 = new Location("");
         loc1.setLatitude(la1);
@@ -269,4 +276,21 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
         return distanceInMeters;
 
     }
+
+    private String getUrl(LatLng origin, LatLng dest, String directionMode) {
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        // Mode
+        String mode = "mode=" + directionMode;
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + mode;
+        // Output format
+        String output = "json";
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + "AIzaSyAYPbRd9v0N1KJcoa8I6mrVwWeXTUBlha4";
+        return url;
+    }
+
 }
