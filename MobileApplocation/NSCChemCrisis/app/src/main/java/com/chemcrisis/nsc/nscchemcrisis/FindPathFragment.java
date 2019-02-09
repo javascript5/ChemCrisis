@@ -11,11 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.chemcrisis.nsc.nscchemcrisis.LoadingDialog.CustomLoadingDialog;
 //import com.chemcrisis.nsc.nscchemcrisis.Services.GPSTracker;
 import com.chemcrisis.nsc.nscchemcrisis.Route.FetchURL;
-import com.chemcrisis.nsc.nscchemcrisis.Route.TaskLoadedCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -25,7 +25,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +38,6 @@ import com.google.maps.android.heatmaps.WeightedLatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,12 +71,34 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
 
     private double currentLat, currentLn;
 
+    private String content;
+
     public static Polyline currentPolyline;
+
+    private TextView distanceTextview, originTextview, destinationTextview, durationTextview, button, walkDurationTextview;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        distanceTextview = getView().findViewById(R.id.find_path_distance_textview);
+        originTextview = getView().findViewById(R.id.find_path_origin_textview);
+        destinationTextview = getView().findViewById(R.id.find_path_destination_textview);
+        durationTextview = getView().findViewById(R.id.find_path_duration_textview);
+        button = getView().findViewById(R.id.information_button);
+        walkDurationTextview = getView().findViewById(R.id.find_path_walk_duration);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity()
+                        .getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_view, new AccidentHistoryFragment())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
 
     }
 
@@ -91,10 +111,7 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
 
         currentLat = Double.valueOf(getArguments().getString("currentLa"));
         currentLn = Double.valueOf(getArguments().getString("currentLong"));
-
-
-//        currentLat = 13.731222;
-//        currentLn = 100.779297;
+        content = getArguments().getString("factory");
 
 
         Log.i("FIND", currentLat + ";" + currentLn);
@@ -129,77 +146,85 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
 
 
 
-        // Create a heat map tile provider, passing it the latlngs of the police stations.
-        databaseReference = database.getReference("accident/KMITL/accidentPosition/");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                float distance = 1000;
-                double nearestLa = 0, nearestLng = 0;
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    double lat = ds.child("0").getValue(Double.class);
-                    double lng = ds.child("1").getValue(Double.class);
-                    double mass = ds.child("2").getValue(Double.class);
+        try {
+            // Create a heat map tile provider, passing it the latlngs of the police stations.
+            databaseReference = database.getReference("accident/" + content + "/accidentPosition/");
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    float distance = 1000;
+                    double nearestLa = 0, nearestLng = 0;
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        double lat = ds.child("0").getValue(Double.class);
+                        double lng = ds.child("1").getValue(Double.class);
+                        double mass = ds.child("2").getValue(Double.class);
 
-                    if (mass > 100){
-                        data.add(new WeightedLatLng(new LatLng(lat, lng), mass));
-                    }
+                        if (mass > 100){
+                            data.add(new WeightedLatLng(new LatLng(lat, lng), mass));
+                        }
 
-                    else if (mass <= 0){
-                        float result = getDistanceBetweenTwoPoints(currentLat, currentLn, lat, lng);
-                        if (result < distance){
-                            distance = result;
-                            nearestLa = lat + 0.000900000900001;
-                            nearestLng = lng;
+                        else if (mass <= 0){
+                            float result = getDistanceBetweenTwoPoints(currentLat, currentLn, lat, lng);
+                            if (result < distance){
+                                distance = result;
+                                nearestLa = lat + 0.000900000900001;
+                                nearestLng = lng;
+                            }
                         }
                     }
+
+                    Log.i("REST", "DistanceInMeter" + distance);
+                    getDistanceApi(nearestLa, nearestLng);
+
+                    final LatLng ORIGIN = new LatLng(currentLat, currentLn);
+                    Marker origin  = mMap.addMarker(new MarkerOptions()
+                            .position(ORIGIN)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+                    final LatLng MELBOURNE = new LatLng(nearestLa, nearestLng);
+                    Marker melbourne = mMap.addMarker(new MarkerOptions()
+                            .position(MELBOURNE)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+                    new FetchURL(getContext()).execute(getUrl(new LatLng(currentLat, currentLn), new LatLng(nearestLa, nearestLng), "driving"), "driving");
+
+                    if (mProvider == null) {
+                        mProvider = new HeatmapTileProvider.Builder().weightedData(data).gradient(gradient).build();
+
+                        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+                        mProvider.setRadius(100);
+
+                        mOverlay.clearTileCache();
+                        customLoadingDialog.dismissDialog();
+                    }
                 }
 
-                Log.i("REST", "DistanceInMeter" + distance);
-                getDistanceApi(nearestLa, nearestLng);
-
-                final LatLng ORIGIN = new LatLng(currentLat, currentLn);
-                Marker origin  = mMap.addMarker(new MarkerOptions()
-                        .position(ORIGIN)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
-                final LatLng MELBOURNE = new LatLng(nearestLa, nearestLng);
-                Marker melbourne = mMap.addMarker(new MarkerOptions()
-                        .position(MELBOURNE)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-
-                new FetchURL(getContext()).execute(getUrl(new LatLng(currentLat, currentLn), new LatLng(nearestLa, nearestLng), "driving"), "driving");
-
-                if (mProvider == null) {
-                    mProvider = new HeatmapTileProvider.Builder().weightedData(data).gradient(gradient).build();
-
-                    mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
-                    mProvider.setRadius(100);
-
-                    mOverlay.clearTileCache();
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
                     customLoadingDialog.dismissDialog();
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                    customLoadingDialog.dismissDialog();
-            }
-        });
+            });
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng( currentLat, 	currentLn);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Your Location"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        mMap.setMaxZoomPreference(17);
-        mMap.setMinZoomPreference(17);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(17), 500, null);
-        addHeatMap(mMap);
+        try {
+            mMap = googleMap;
+            // Add a marker in Sydney, Australia, and move the camera.
+            LatLng sydney = new LatLng( currentLat, 	currentLn);
+            mMap.addMarker(new MarkerOptions().position(sydney).title("Your Location"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+            mMap.setMinZoomPreference(17);
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(17), 500, null);
+            addHeatMap(mMap);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -212,54 +237,72 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Log.i("URL", url + "");
     }
     private void run(String url) throws IOException {
 
-        OkHttpClient client = new OkHttpClient();
+        try {
+            OkHttpClient client = new OkHttpClient();
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                call.cancel();
-            }
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                }
 
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+                @Override
+                public void onResponse(Call call, final Response response) throws IOException {
 
-                final String myResponse = response.body().string();
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try{
-                            String destination, origin, distance;
+                    final String myResponse = response.body().string();
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                String destination, origin, distance, duration;
 
-                            JSONObject json = new JSONObject(myResponse);
-                            destination = json.getJSONArray("destination_addresses").get(0) + "";
-                            origin = json.getJSONArray("origin_addresses").get(0) + "";
-                            Object json2 = json.getJSONArray("rows").get(0);
-                            JSONObject jsonObj = new JSONObject(json2+"");
-                            Object json3 = jsonObj.getJSONArray("elements").get(0);
-                            JSONObject jsonObject2 = new JSONObject(json3+"");
-                            Object json4 = jsonObject2.get("distance");
-                            JSONObject jsonObject3 = new JSONObject(json4+"");
-                            distance = jsonObject3.get("value") + "";
+                                JSONObject json = new JSONObject(myResponse);
+                                destination = json.getJSONArray("destination_addresses").get(0) + "";
+                                origin = json.getJSONArray("origin_addresses").get(0) + "";
+                                Object json2 = json.getJSONArray("rows").get(0);
+                                JSONObject jsonObj = new JSONObject(json2+"");
+                                Object json3 = jsonObj.getJSONArray("elements").get(0);
+                                JSONObject jsonObject2 = new JSONObject(json3+"");
+                                Object json4 = jsonObject2.get("distance");
+                                JSONObject jsonObject3 = new JSONObject(json4+"");
+                                distance = jsonObject3.get("value") + "";
 
-                            Log.i("REST", "Destination : " + destination);
-                            Log.i("REST", "Origin : " + origin);
-                            Log.i("REST", "Distance : " + distance + "m");
+                                Object json5 = jsonObject2.get("duration");
+                                JSONObject jsonObject4 = new JSONObject(json5+"");
+                                duration = jsonObject4.get("value") + "";
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                                int durationToInt = (int) Math.ceil(Integer.parseInt(duration) / 60) + 1;
+
+                                Log.i("REST", "Destination : " + destination);
+                                Log.i("REST", "Origin : " + origin);
+                                Log.i("REST", "Distance : " + distance + "m");
+
+                                distanceTextview.setText(distance);
+                                originTextview.setText("ตำแหน่งปัจจุบัน");
+                                destinationTextview.setText(destination);
+                                durationTextview.setText(durationToInt + " นาที");
+                                walkDurationTextview.setText(durationToInt*4 + " นาที");
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                });
+                    });
 
-            }
-        });
+                }
+            });
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private float getDistanceBetweenTwoPoints(double la1, double ln1, double la2, double ln2){
