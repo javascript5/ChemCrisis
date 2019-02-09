@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.chemcrisis.nsc.nscchemcrisis.LoadingDialog.CustomLoadingDialog;
 import com.chemcrisis.nsc.nscchemcrisis.Route.TaskLoadedCallback;
 import com.chemcrisis.nsc.nscchemcrisis.Services.FirebaseDataReceiver;
+import com.chemcrisis.nsc.nscchemcrisis.Services.SavedInstanceFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -31,6 +32,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.maps.android.heatmaps.WeightedLatLng;
+import com.gu.toolargetool.TooLargeTool;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, TaskLoadedCallback {
 
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(SavedInstanceFragment.getInstance(getFragmentManager()).popData());
         setContentView(R.layout.activity_main);
 
         buildGoogleApiClient();
@@ -107,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         double lng = ds.child("1").getValue(Double.class);
                         double mass = ds.child("2").getValue(Double.class);
 
-                        if (mass > 10){
+                        if (mass > 100){
                             float distance = getDistanceBetweenTwoPoints(currentLa, currentLong, lat, lng);
                             if (distance <= 50){
                                 Log.i("DISTANCEX", distance + "");
@@ -213,5 +215,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        SavedInstanceFragment.getInstance(getFragmentManager()).pushData((Bundle) outState.clone());
+        outState.clear(); // We don't want a TransactionTooLargeException, so we handle things via the SavedInstanceFragment
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState( SavedInstanceFragment.getInstance( getFragmentManager() ).popData() );
     }
 }

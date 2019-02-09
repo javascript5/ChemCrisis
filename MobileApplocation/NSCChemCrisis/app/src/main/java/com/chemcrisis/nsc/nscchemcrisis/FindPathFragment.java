@@ -165,9 +165,9 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
 
                         else if (mass <= 0){
                             float result = getDistanceBetweenTwoPoints(currentLat, currentLn, lat, lng);
-                            if (result < distance){
+                            if (result < distance && result > 100){
                                 distance = result;
-                                nearestLa = lat + 0.000900000900001;
+                                nearestLa = lat;
                                 nearestLng = lng;
                             }
                         }
