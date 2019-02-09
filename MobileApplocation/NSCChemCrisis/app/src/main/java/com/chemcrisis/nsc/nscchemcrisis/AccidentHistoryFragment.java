@@ -15,8 +15,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.gu.toolargetool.TooLargeTool;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class AccidentHistoryFragment extends Fragment {
 
@@ -37,6 +39,8 @@ public class AccidentHistoryFragment extends Fragment {
                 for(DataSnapshot dataSnapshotObj : dataSnapshot.getChildren())
                     histories.add(dataSnapshotObj.getValue(History.class));
 
+                Collections.reverse(histories);
+
                 AccidentHistoryAdapter accidentHistoryAdapter = new AccidentHistoryAdapter(getContext(),R.layout.history_adapter, histories);
 
                 listView.setAdapter(accidentHistoryAdapter);
@@ -54,4 +58,5 @@ public class AccidentHistoryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.accident_history_fragment, container, false);
     }
+
 }
