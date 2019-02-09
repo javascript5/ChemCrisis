@@ -89,12 +89,12 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
 
         View view = inflater.inflate(R.layout.find_path_fragment, null, false);
 
-//        currentLat = Double.valueOf(getArguments().getString("currentLa"));
-//        currentLn = Double.valueOf(getArguments().getString("currentLong"));
+        currentLat = Double.valueOf(getArguments().getString("currentLa"));
+        currentLn = Double.valueOf(getArguments().getString("currentLong"));
 
 
-        currentLat = 13.731222;
-        currentLn = 100.779297;
+//        currentLat = 13.731222;
+//        currentLn = 100.779297;
 
 
         Log.i("FIND", currentLat + ";" + currentLn);

@@ -17,6 +17,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, TaskLoadedCallback {
 
@@ -127,34 +129,43 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     private void checkLocationToRedirect(final double currentLa, final double currentLong){
-        databaseReference = database.getReference("factory/KMITL/");
+        databaseReference = database.getReference("accident/KMITL/accidentPosition/");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                double lat = dataSnapshot.child("latitude").getValue(Double.class);
-                double ln = dataSnapshot.child("longitude").getValue(Double.class);
+                boolean isInPlume = false;
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    double lat = ds.child("0").getValue(Double.class);
+                    double lng = ds.child("1").getValue(Double.class);
+                    double mass = ds.child("2").getValue(Double.class);
 
-                float distance = getDistanceBetweenTwoPoints(currentLa, currentLong, lat, ln);
-                Log.i("LOCATION", distance + "");
-                if(distance <= 10000){
-                    Bundle bundle = new Bundle();
-                    bundle.putString("currentLa", currentLa + "");
-                    bundle.putString("currentLong", currentLong + "");
-                    FindPathFragment fragobj = new FindPathFragment();
-                    fragobj.setArguments(bundle);
+                    if (mass > 10){
+                        float distance = getDistanceBetweenTwoPoints(currentLa, currentLong, lat, lng);
+                        if (distance <= 50){
+                            isInPlume = true;
+                        }
+                    }
 
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.main_view, fragobj)
-                            .addToBackStack(null)
-                            .commit();
-                }else{
-                    //redirect to history Fragment
-                    getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.main_view, new SafezoneFragment())
-                        .addToBackStack(null)
-                        .commit();
+                    if (isInPlume){
+                        Bundle bundle = new Bundle();
+                        bundle.putString("currentLa", currentLa + "");
+                        bundle.putString("currentLong", currentLong + "");
+                        FindPathFragment fragobj = new FindPathFragment();
+                        fragobj.setArguments(bundle);
+
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.main_view, fragobj)
+                                .addToBackStack(null)
+                                .commit();
+                        break;
+                    } else{
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.main_view, new SafezoneFragment())
+                                .addToBackStack(null)
+                                .commit();
+                    }
                 }
 
             }
