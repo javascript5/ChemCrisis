@@ -156,7 +156,7 @@
         android:id="@+id/constraintLayout3"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/find_path_button"
+        app:layout_constraintBottom_toTopOf="@+id/information_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_chemical_information">
@@ -193,7 +193,7 @@
     </android.support.constraint.ConstraintLayout>
 
     <Button
-        android:id="@+id/find_path_button"
+        android:id="@+id/information_button"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="0dp"
         android:layout_height="50dp"

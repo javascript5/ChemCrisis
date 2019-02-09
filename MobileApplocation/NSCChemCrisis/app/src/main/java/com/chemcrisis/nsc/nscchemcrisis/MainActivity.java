@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.chemcrisis.nsc.nscchemcrisis.LoadingDialog.CustomLoadingDialog;
 import com.chemcrisis.nsc.nscchemcrisis.Route.TaskLoadedCallback;
 import com.chemcrisis.nsc.nscchemcrisis.Services.FirebaseDataReceiver;
 import com.google.android.gms.common.ConnectionResult;
@@ -59,36 +60,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         FirebaseMessaging.getInstance().subscribeToTopic("NEWS");
 
-
-        getFCMToken();
-
-//        if (savedInstanceState == null) {
-//            if (FirebaseDataReceiver.getContent() != null){
-//                String content = FirebaseDataReceiver.getContent();
-//                Log.i("CONTENTINMAIN", content);
-//                if(content.equals("CHEM")){
-//                    getSupportFragmentManager()
-//                            .beginTransaction()
-//                            .replace(R.id.main_view, new FindPathFragment())
-//                            .addToBackStack(null)
-//                            .commit();
-//                }else{
-//                    getSupportFragmentManager()
-//                            .beginTransaction()
-//                            .replace(R.id.main_view, new SafezoneFragment())
-//                            .addToBackStack(null)
-//                            .commit();
-//                }
-//                FirebaseDataReceiver.setContent();
-//            }else{
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.main_view, new FindPathFragment())
-//                        .addToBackStack(null)
-//                        .commit();
-//            }
-//        }
-
     }
 
     @Override
@@ -96,22 +67,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         Log.i("BACKBUTTON", "DISABLE");
     }
 
-    public void getFCMToken(){
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w("GETTOKEN", "getInstanceId failed", task.getException());
-                            return;
-                        }
-                        String token = task.getResult().getToken();
-
-                        String msg = token;
-                        Log.d("GETTOKEN", msg);
-                    }
-                });
-    }
 
     private float getDistanceBetweenTwoPoints(double la1, double ln1, double la2, double ln2){
         Location loc1 = new Location("");
@@ -129,71 +84,97 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     private void checkLocationToRedirect(final double currentLa, final double currentLong){
-        databaseReference = database.getReference("accident/KMITL/accidentPosition/");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                boolean isInPlume = false;
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    double lat = ds.child("0").getValue(Double.class);
-                    double lng = ds.child("1").getValue(Double.class);
-                    double mass = ds.child("2").getValue(Double.class);
+        try {
 
-                    if (mass > 10){
-                        float distance = getDistanceBetweenTwoPoints(currentLa, currentLong, lat, lng);
-                        if (distance >= 5000000){
-                            isInPlume = true;
+            final String content;
+            if (FirebaseDataReceiver.getContent() != null){
+                content = FirebaseDataReceiver.getContent();
+                Log.i("CONTENT", content);
+                FirebaseDataReceiver.setContent();
+            } else{
+                content = "TU";
+            }
+
+            Log.i("CONTENT", "accident/" + content +"/accidentPosition/");
+
+            databaseReference = database.getReference("accident/" + content + "/accidentPosition/");
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    boolean isInPlume = false;
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        double lat = ds.child("0").getValue(Double.class);
+                        double lng = ds.child("1").getValue(Double.class);
+                        double mass = ds.child("2").getValue(Double.class);
+
+                        if (mass > 10){
+                            float distance = getDistanceBetweenTwoPoints(currentLa, currentLong, lat, lng);
+                            if (distance <= 50){
+                                Log.i("DISTANCEX", distance + "");
+                                isInPlume = true;
+                            }
+                        }
+
+                        if (isInPlume){
+                            Bundle bundle = new Bundle();
+                            bundle.putString("currentLa", currentLa + "");
+                            bundle.putString("currentLong", currentLong + "");
+                            bundle.putString("factory", content);
+                            AccidentInformationFragment fragobj = new AccidentInformationFragment();
+                            fragobj.setArguments(bundle);
+
+                            getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.main_view, fragobj)
+                                    .addToBackStack(null)
+                                    .commit();
+                            break;
+                        } else{
+                            getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.main_view, new AccidentHistoryFragment())
+                                    .addToBackStack(null)
+                                    .commit();
                         }
                     }
 
-                    if (isInPlume){
-                        Bundle bundle = new Bundle();
-                        bundle.putString("currentLa", currentLa + "");
-                        bundle.putString("currentLong", currentLong + "");
-                        FindPathFragment fragobj = new FindPathFragment();
-                        fragobj.setArguments(bundle);
-
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.main_view, fragobj)
-                                .addToBackStack(null)
-                                .commit();
-                        break;
-                    } else{
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.main_view, new AccidentHistoryFragment())
-                                .addToBackStack(null)
-                                .commit();
-                    }
                 }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
+        try {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @SuppressLint("MissingPermission")
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10);
-        mLocationRequest.setFastestInterval(10);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        try {
+            mLocationRequest = new LocationRequest();
+            mLocationRequest.setInterval(10);
+            mLocationRequest.setFastestInterval(10);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -208,10 +189,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onLocationChanged(Location location) {
-        checkLocationToRedirect(location.getLatitude(), location.getLongitude());
-        mGoogleApiClient.disconnect();
-        Log.d("LOCATION", "accuracy: " + location.getAccuracy() + " lat: " + location.getLatitude() + " lon: " + location.getLongitude());
-
+        try {
+            checkLocationToRedirect(location.getLatitude(), location.getLongitude());
+//        checkLocationToRedirect(13.727524, 100.765024);
+            mGoogleApiClient.disconnect();
+            Log.d("LOCATION", "accuracy: " + location.getAccuracy() + " lat: " + location.getLatitude() + " lon: " + location.getLongitude());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -221,8 +206,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onTaskDone(Object... values) {
-        if (FindPathFragment.currentPolyline != null)
-            FindPathFragment.currentPolyline.remove();
-        FindPathFragment.currentPolyline = FindPathFragment.mMap.addPolyline((PolylineOptions) values[0]);
+        try {
+            if (FindPathFragment.currentPolyline != null)
+                FindPathFragment.currentPolyline.remove();
+            FindPathFragment.currentPolyline = FindPathFragment.mMap.addPolyline((PolylineOptions) values[0]);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

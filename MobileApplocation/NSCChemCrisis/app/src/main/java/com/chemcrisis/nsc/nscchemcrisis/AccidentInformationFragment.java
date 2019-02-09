@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -24,10 +25,38 @@ public class AccidentInformationFragment extends Fragment {
     private  ArrayList<Chemical> chemicals = new ArrayList<>();
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private String[] chemicalsName;
+    private double currentLat, currentLn;
+    private String content;
+    private Button findPathButton;
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        DatabaseReference databaseReference = database.getReference("accident/KMITL/accidentChemical/");
+
+        findPathButton = getView().findViewById(R.id.information_button);
+        currentLat = Double.valueOf(getArguments().getString("currentLa"));
+        currentLn = Double.valueOf(getArguments().getString("currentLong"));
+        content = getArguments().getString("factory");
+
+
+        findPathButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("currentLa", currentLat + "");
+                bundle.putString("currentLong", currentLn + "");
+                bundle.putString("factory", content);
+                FindPathFragment fragobj = new FindPathFragment();
+                fragobj.setArguments(bundle);
+
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_view, fragobj)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        DatabaseReference databaseReference = database.getReference("accident/" + content + "/accidentChemical/");
         databaseReference.addValueEventListener(new ValueEventListener() {
          @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

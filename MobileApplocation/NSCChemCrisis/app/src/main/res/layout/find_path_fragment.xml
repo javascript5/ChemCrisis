@@ -25,12 +25,12 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/find_path_distance_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:fontFamily="@font/prompt_bold"
-            android:text="1000"
+            android:text=""
             android:textAlignment="center"
             android:textColor="#fff"
             android:textSize="24dp"
@@ -48,28 +48,7 @@
             android:textSize="14dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/get_current_location_button_style"
-        android:elevation="14dp"
-        app:layout_constraintBottom_toTopOf="@+id/cardView"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:foregroundGravity="center"
-            android:src="@drawable/get_current_location_button"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/find_path_distance_textview" />
     </android.support.constraint.ConstraintLayout>
 
     <LinearLayout
@@ -81,7 +60,7 @@
         android:layout_marginBottom="25dp"
         android:background="@drawable/find_path_box"
         android:elevation="14dp"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/information_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -94,7 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="35dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="0dp"
                 android:layout_marginEnd="35dp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -106,27 +85,30 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginBottom="5dp">
 
                     <ImageView
                         android:layout_width="25dp"
                         android:layout_height="29dp"
-                        android:layout_marginRight="27dp"
+                        android:layout_marginRight="10dp"
                         android:background="@drawable/current_location" />
 
                     <TextView
+                        android:id="@+id/find_path_origin_textview"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:fontFamily="@font/prompt_medium"
                         android:gravity="center"
-                        android:text="ตำแหน่งปัจจุบัน"
+                        android:maxLines="1"
+                        android:scrollbars="vertical"
+                        android:text=""
                         android:textAlignment="center" />
                 </LinearLayout>
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginBottom="5dp">
 
                     <ImageView
                         android:id="@+id/imageView3"
@@ -157,16 +139,19 @@
                     <ImageView
                         android:layout_width="25dp"
                         android:layout_height="29dp"
-                        android:layout_marginRight="27dp"
+                        android:layout_marginRight="10dp"
                         android:background="@drawable/destination_location"
                         android:gravity="center" />
 
                     <TextView
+                        android:id="@+id/find_path_destination_textview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/prompt_medium"
                         android:gravity="center"
-                        android:text="แขวงลำปลาทิวเขต  ลาดกระบัง"
+                        android:maxLines="1"
+                        android:scrollbars="vertical"
+                        android:text=""
                         android:textAlignment="textStart" />
                 </LinearLayout>
 
@@ -177,7 +162,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginEnd="20dp"
                 android:src="@drawable/border_bottom"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -188,9 +173,9 @@
                 android:id="@+id/linearLayout2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:paddingBottom="10dp"
+                android:paddingBottom="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -216,10 +201,11 @@
                         android:textSize="16dp" />
 
                     <TextView
+                        android:id="@+id/find_path_duration_textview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/prompt_medium"
-                        android:text="10 นาที"
+                        android:text=""
                         android:textAlignment="center"
                         android:textColor="#CBCBCB"
                         android:textSize="13dp" />
@@ -254,10 +240,10 @@
                         android:textSize="16dp" />
 
                     <TextView
+                        android:id="@+id/find_path_walk_duration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/prompt_medium"
-                        android:text="10 นาที"
                         android:textAlignment="center"
                         android:textColor="#CBCBCB"
                         android:textSize="13dp" />
@@ -267,7 +253,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/information_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
