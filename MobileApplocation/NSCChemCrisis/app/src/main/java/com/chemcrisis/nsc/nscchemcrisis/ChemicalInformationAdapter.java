@@ -18,11 +18,12 @@ public class ChemicalInformationAdapter extends RecyclerView.Adapter<ChemicalInf
     private Context mContext;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView chemicalThaiName;
+        public TextView chemicalThaiName , chemicalName;
         public CardView cardView;
         public ViewHolder(View view) {
             super(view);
             chemicalThaiName = (TextView) view.findViewById(R.id.thaiName);
+            chemicalName = view.findViewById(R.id.engName);
             cardView = (CardView) view.findViewById(R.id.chemical_information_cardView);
         }
     }
@@ -45,6 +46,7 @@ public class ChemicalInformationAdapter extends RecyclerView.Adapter<ChemicalInf
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         Chemical chemical = chemicals.get(i);
         viewHolder.chemicalThaiName.setText(chemical.getChemicalThaiName());
+        viewHolder.chemicalName.setText(chemical.getChemicalName());
         String violenceOfChemica = chemical.getViolenceOfChemical();
 
         switch(violenceOfChemica)

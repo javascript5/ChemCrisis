@@ -62,7 +62,7 @@ public class AccidentInformationFragment extends Fragment {
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
              String chemicalStr = dataSnapshot.getValue().toString();
              chemicalsName = chemicalStr.split(",");
-
+             chemicals.clear();
              for(final String chemical : chemicalsName) {
                  DatabaseReference databaseReference = database.getReference("chemical/"+chemical.trim()+"");
 
@@ -70,7 +70,6 @@ public class AccidentInformationFragment extends Fragment {
 
                      @Override
                      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                         chemicals.clear();
                          chemicals.add(dataSnapshot.getValue(Chemical.class));
                          RecyclerView chemicalList = getView().findViewById(R.id.chemical_information_list_view);
 

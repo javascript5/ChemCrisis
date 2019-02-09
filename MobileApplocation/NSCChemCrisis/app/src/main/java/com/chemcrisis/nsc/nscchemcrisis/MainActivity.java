@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
 
+    public static boolean isInPlume = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(SavedInstanceFragment.getInstance(getFragmentManager()).popData());
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             if (FirebaseDataReceiver.getContent() != null){
                 content = FirebaseDataReceiver.getContent();
                 Log.i("CONTENT", content);
-                FirebaseDataReceiver.setContent();
+//                FirebaseDataReceiver.setContent();
             } else{
                 content = "TU";
             }
@@ -103,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    boolean isInPlume = false;
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         double lat = ds.child("0").getValue(Double.class);
                         double lng = ds.child("1").getValue(Double.class);
