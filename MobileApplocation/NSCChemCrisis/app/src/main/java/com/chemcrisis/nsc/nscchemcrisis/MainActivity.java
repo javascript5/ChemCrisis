@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                     if (mass > 10){
                         float distance = getDistanceBetweenTwoPoints(currentLa, currentLong, lat, lng);
-                        if (distance <= 50){
+                        if (distance >= 5000000){
                             isInPlume = true;
                         }
                     }
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     } else{
                         getSupportFragmentManager()
                                 .beginTransaction()
-                                .replace(R.id.main_view, new SafezoneFragment())
+                                .replace(R.id.main_view, new AccidentHistoryFragment())
                                 .addToBackStack(null)
                                 .commit();
                     }

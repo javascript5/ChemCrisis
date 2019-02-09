@@ -22,10 +22,12 @@ public class AccidentHistoryFragment extends Fragment {
 
     private ArrayList<History> histories = new ArrayList<>();
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private ListView listView;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        listView = (ListView) getView().findViewById(R.id.historyListview);
         DatabaseReference databaseReference = database.getReference("history");
         databaseReference.addValueEventListener(new ValueEventListener() {
 
@@ -36,7 +38,7 @@ public class AccidentHistoryFragment extends Fragment {
                     histories.add(dataSnapshotObj.getValue(History.class));
 
                 AccidentHistoryAdapter accidentHistoryAdapter = new AccidentHistoryAdapter(getContext(),R.layout.history_adapter, histories);
-                ListView listView = getView().findViewById(R.id.historyListview);
+
                 listView.setAdapter(accidentHistoryAdapter);
             }
 
