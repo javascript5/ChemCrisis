@@ -97,10 +97,10 @@ def addAccident():
 def sendNotification(factory ):
     push_service = FCMNotification(api_key="AIzaSyDXMxfSwPddFDdyeaf0OVyvZEog5ThuFRI")
     data = {
-    "content" : "CHEM"
+    "content" : factory
     }
-    title = "ท่าอยู่ในจุดเกิดเหตุการรั่วไหลของสารเคมี"
-    message = ("กรุณาออกจากจุดเกิดเหตุโดยด่วน ให้พวกเรานำทางให้สิ (จุดเกิดเหตุ โรงงาน %s)" , factory)
+    title = "ท่านอยู่ในจุดเกิดเหตุการรั่วไหลของสารเคมี"
+    message = ("กรุณาออกจากจุดเกิดเหตุโดยด่วน เปิดเพื่อให้พวกเรานำทางให้สิ (จุดเกิดเหตุ โรงงาน %s)" , factory)
     result = push_service.notify_topic_subscribers(topic_name="NEWS",message_title=title, message_body=message,data_message=data)
     print(result)
 
