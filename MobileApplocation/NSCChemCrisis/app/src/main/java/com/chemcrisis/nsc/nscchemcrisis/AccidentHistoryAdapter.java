@@ -38,8 +38,8 @@ public class AccidentHistoryAdapter extends ArrayAdapter<History> {
         TextView factory = (TextView)historyItem.findViewById(R.id.factory_history_adapter);
 
         dateTimeHistory.setText(histories.get(position).getDateTime());
-        effectiveStackHeight.setText(histories.get(position).getEffectiveStackHeight()+"");
-        massEmissionRate.setText(histories.get(position).getMassEmissionRate()+"");
+        effectiveStackHeight.setText(histories.get(position).getEffectiveStackHeight()+" m");
+        massEmissionRate.setText(histories.get(position).getMassEmissionRate()+" g/s");
         chemical.setText(histories.get(position).getAccidentChemical());
         factory.setText("โรงงาน "+histories.get(position).getFactoryId());
 
