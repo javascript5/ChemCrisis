@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 Log.i("CONTENT", content);
 //                FirebaseDataReceiver.setContent();
             } else{
-                content = "TU";
+                content = "Fashion Island";
             }
 
             Log.i("CONTENT", "accident/" + content +"/accidentPosition/");
@@ -110,13 +110,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         double lng = ds.child("1").getValue(Double.class);
                         double mass = ds.child("2").getValue(Double.class);
 
-                        if (mass > 100){
+                        if (mass >= 100){
                             float distance = getDistanceBetweenTwoPoints(currentLa, currentLong, lat, lng);
-                            if (distance <= 50){
+                            if (distance <= 500){
                                 Log.i("DISTANCEX", distance + "");
                                 isInPlume = true;
                             }
                         }
+
+//                        isInPlume = true;
 
                         if (isInPlume){
                             Bundle bundle = new Bundle();
@@ -194,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onLocationChanged(Location location) {
         try {
             checkLocationToRedirect(location.getLatitude(), location.getLongitude());
-//        checkLocationToRedirect(13.727524, 100.765024);
+//            checkLocationToRedirect(13.727773, 100.767422);
             mGoogleApiClient.disconnect();
             Log.d("LOCATION", "accuracy: " + location.getAccuracy() + " lat: " + location.getLatitude() + " lon: " + location.getLongitude());
         } catch (Exception e){

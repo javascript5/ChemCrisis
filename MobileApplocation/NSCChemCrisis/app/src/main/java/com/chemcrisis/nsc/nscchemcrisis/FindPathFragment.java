@@ -159,7 +159,7 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
                         double lng = ds.child("1").getValue(Double.class);
                         double mass = ds.child("2").getValue(Double.class);
 
-                        if (mass > 100){
+                        if (mass > 50){
                             data.add(new WeightedLatLng(new LatLng(lat, lng), mass));
                         }
 
@@ -216,11 +216,13 @@ public class FindPathFragment extends Fragment implements OnMapReadyCallback {
             mMap = googleMap;
             // Add a marker in Sydney, Australia, and move the camera.
             LatLng sydney = new LatLng( currentLat, 	currentLn);
+            Log.i("GEO", sydney + "");
+//            LatLng sydney = new LatLng(13.727773, 100.767422);
             mMap.addMarker(new MarkerOptions().position(sydney).title("Your Location"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 16));
 
-            mMap.setMinZoomPreference(17);
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(17), 500, null);
+            mMap.setMinZoomPreference(16);
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(16), 500, null);
             addHeatMap(mMap);
         } catch (Exception e){
             e.printStackTrace();
